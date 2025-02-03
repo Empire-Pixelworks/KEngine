@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="chapter-1-js-1.0-SNAPSHOT">
+    <output-path>$PROJECT_DIR$/build/libs</output-path>
+    <root id="archive" name="chapter-1-js-1.0-SNAPSHOT.jar">
+      <element id="module-output" name="chapter-1.jsMain" />
+    </root>
+  </artifact>
+</component>
