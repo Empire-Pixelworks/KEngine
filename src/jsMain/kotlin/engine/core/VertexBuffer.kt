@@ -1,10 +1,6 @@
 package engine.core
 
 import engine.errors.KEngineError
-import engine.util.Failure
-import engine.util.Success
-import engine.util.Try
-import engine.util.getOrThrow
 import org.khronos.webgl.Float32Array
 import org.khronos.webgl.WebGLBuffer
 import org.khronos.webgl.WebGLRenderingContext
@@ -28,16 +24,16 @@ object VertexBuffer {
 
     private fun setBufferReference() {
         if (buffer == null) {
-            buffer = initialize().getOrThrow()
+            buffer = initialize()
         }
     }
 
-    private fun initialize(): Try<WebGLBuffer> {
-        val mVBuff = Core.gl.createBuffer() ?: return Failure(KEngineError("There was an error creating the Vertex Buffer"))
+    private fun initialize(): WebGLBuffer {
+        val mVBuff = Core.gl.createBuffer() ?: throw KEngineError("There was an error creating the Vertex Buffer")
 
         Core.gl.bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, mVBuff)
         Core.gl.bufferData(WebGLRenderingContext.ARRAY_BUFFER, Float32Array(verticesOfSquare), WebGLRenderingContext.STATIC_DRAW)
 
-        return Success(mVBuff)
+        return mVBuff
     }
 }

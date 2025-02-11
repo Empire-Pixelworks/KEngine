@@ -7,7 +7,6 @@ import engine.core.Core
 import engine.core.GameLoop
 import engine.core.Input
 import engine.script_engine.Lexer
-import engine.util.getOrThrow
 import org.khronos.webgl.Float32Array
 
 class Client(): MyGame {
@@ -19,7 +18,6 @@ class Client(): MyGame {
 
     val simpleShader = Shader
         .simpleShader("GLSLShaders/SimpleVS.glsl", "GLSLShaders/SimpleFS.glsl")
-        .getOrThrow()
 
     val whiteSq = Renderable(simpleShader, arrayOf(1f,1f,1f,1f))
     val redSq = Renderable(simpleShader, arrayOf(1f, 0f, 0f, 1f))

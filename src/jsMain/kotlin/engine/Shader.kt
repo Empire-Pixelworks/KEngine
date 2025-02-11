@@ -3,10 +3,6 @@ package engine
 import engine.core.Core
 import engine.core.VertexBuffer
 import engine.errors.KEngineError
-import engine.util.Failure
-import engine.util.Success
-import engine.util.Try
-import engine.util.onErr
 import org.khronos.webgl.Float32Array
 import org.khronos.webgl.WebGLProgram
 import org.khronos.webgl.WebGLRenderingContext
@@ -42,18 +38,18 @@ object Shader {
         }
     }
 
-    fun simpleShader(vertexShaderId: String, fragmentShaderId: String): Try<SimpleShader> {
-        val vertexShader = loadAndCompileShader(vertexShaderId, WebGLRenderingContext.VERTEX_SHADER).onErr { return Failure(it) }
-        val fragmentShader = loadAndCompileShader(fragmentShaderId, WebGLRenderingContext.FRAGMENT_SHADER).onErr { return Failure(it) }
+    fun simpleShader(vertexShaderId: String, fragmentShaderId: String): SimpleShader {
+        val vertexShader = loadAndCompileShader(vertexShaderId, WebGLRenderingContext.VERTEX_SHADER)
+        val fragmentShader = loadAndCompileShader(fragmentShaderId, WebGLRenderingContext.FRAGMENT_SHADER)
 
-        val mCompiledShader = Core.gl.createProgram() ?: return Failure(KEngineError("There was an error creating the Shader program"))
+        val mCompiledShader = Core.gl.createProgram() ?: throw KEngineError("There was an error creating the Shader program")
 
         Core.gl.attachShader(mCompiledShader, vertexShader)
         Core.gl.attachShader(mCompiledShader, fragmentShader)
         Core.gl.linkProgram(mCompiledShader)
 
         if (Core.gl.getProgramParameter(mCompiledShader, WebGLRenderingContext.LINK_STATUS) == false) {
-            return Failure(KEngineError("Error Linking Shader"))
+            throw KEngineError("Error Linking Shader")
         }
 
         val mShaderVertexPositionAttribute = Core.gl.getAttribLocation(mCompiledShader, SHADER_POS_ATTR)
@@ -69,25 +65,25 @@ object Shader {
             0
         )
 
-        return Success(SimpleShader(mCompiledShader, mShaderVertexPositionAttribute))
+        return SimpleShader(mCompiledShader, mShaderVertexPositionAttribute)
     }
 
-    private fun loadAndCompileShader(filePath: String, shaderType: Int): Try<WebGLShader> {
+    private fun loadAndCompileShader(filePath: String, shaderType: Int): WebGLShader {
         val shaderSource = XMLHttpRequest().let {
             it.open("GET", filePath, false)
-            Try.tryFrom { it.send() }.onErr { return Failure(it) }
+            it.send()
             it.responseText
         }
 
-        val compiledShader = Core.gl.createShader(shaderType) ?: return Failure(KEngineError("Shader from file $filePath could not be created"))
+        val compiledShader = Core.gl.createShader(shaderType) ?: throw KEngineError("Shader from file $filePath could not be created")
 
         Core.gl.shaderSource(compiledShader, shaderSource)
         Core.gl.compileShader(compiledShader)
 
         if (Core.gl.getShaderParameter(compiledShader, WebGLRenderingContext.COMPILE_STATUS) == false) {
-            return Failure(KEngineError("A shader compiling error occurred: ${Core.gl.getShaderInfoLog(compiledShader)}"))
+            throw  KEngineError("A shader compiling error occurred: ${Core.gl.getShaderInfoLog(compiledShader)}")
         }
 
-        return Success(compiledShader)
+        return compiledShader
     }
 }
