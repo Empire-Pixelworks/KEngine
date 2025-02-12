@@ -8,7 +8,6 @@ import org.khronos.webgl.WebGLProgram
 import org.khronos.webgl.WebGLRenderingContext
 import org.khronos.webgl.WebGLShader
 import org.khronos.webgl.WebGLUniformLocation
-import org.w3c.xhr.XMLHttpRequest
 
 object Shader {
     private const val SHADER_POS_ATTR = "aSquareVertexPosition"
@@ -38,9 +37,9 @@ object Shader {
         }
     }
 
-    fun simpleShader(vertexShaderId: String, fragmentShaderId: String): SimpleShader {
-        val vertexShader = loadAndCompileShader(vertexShaderId, WebGLRenderingContext.VERTEX_SHADER)
-        val fragmentShader = loadAndCompileShader(fragmentShaderId, WebGLRenderingContext.FRAGMENT_SHADER)
+    fun simpleShader(vertexShaderSource: String, fragmentShaderSource: String): SimpleShader {
+        val vertexShader = compileShader(vertexShaderSource, WebGLRenderingContext.VERTEX_SHADER)
+        val fragmentShader = compileShader(fragmentShaderSource, WebGLRenderingContext.FRAGMENT_SHADER)
 
         val mCompiledShader = Core.gl.createProgram() ?: throw KEngineError("There was an error creating the Shader program")
 
@@ -68,14 +67,8 @@ object Shader {
         return SimpleShader(mCompiledShader, mShaderVertexPositionAttribute)
     }
 
-    private fun loadAndCompileShader(filePath: String, shaderType: Int): WebGLShader {
-        val shaderSource = XMLHttpRequest().let {
-            it.open("GET", filePath, false)
-            it.send()
-            it.responseText
-        }
-
-        val compiledShader = Core.gl.createShader(shaderType) ?: throw KEngineError("Shader from file $filePath could not be created")
+    private fun compileShader(shaderSource: String, shaderType: Int): WebGLShader {
+        val compiledShader = Core.gl.createShader(shaderType) ?: throw KEngineError("Shader could not be created")
 
         Core.gl.shaderSource(compiledShader, shaderSource)
         Core.gl.compileShader(compiledShader)

@@ -1,3 +1,4 @@
+import engine.core.Core
 import kotlinx.browser.document
 import mygame.Client
 import org.khronos.webgl.*
@@ -95,5 +96,5 @@ import org.w3c.dom.HTMLCanvasElement
 //}
 
 fun main() {
-    Client()
+    Core.initializeGame(Client())
 }
