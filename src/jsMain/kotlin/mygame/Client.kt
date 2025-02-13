@@ -1,11 +1,12 @@
 package mygame
 
-import engine.Camera
-import engine.Renderable
-import engine.Shader
+import engine.objects.Camera
+import engine.objects.Renderable
 import engine.core.Core
 import engine.core.Input
 import engine.core.resources.DefaultResources
+import engine.script_engine.Lexer
+import engine.script_engine.Parser
 import org.khronos.webgl.Float32Array
 
 class Client(): MyGame {
@@ -30,6 +31,27 @@ class Client(): MyGame {
 
         redSq.xForm.setPosition(20f, 60f)
         redSq.xForm.setScale(2f, 2f)
+
+        val testies = """
+            aValue = 12
+            
+            [myFirstObject]
+            firstObjValue = true
+            secondObjectValue = [1,2,3,4]
+            third = "some cool text"
+            
+            [myFirstObject.childOne]
+            first = 24.432
+            
+            [anotherObj]
+            first = "thing one"
+            second = 23.4
+            third = -2353.45
+        """.trimIndent()
+
+        val tokens = Lexer.tkz(testies)
+        val elements = Parser(tokens.toMutableList()).start()
+        elements.forEach { println(it) }
     }
 
     override fun update() {

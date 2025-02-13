@@ -1,4 +1,4 @@
-package engine
+package engine.objects
 
 import engine.core.Core
 import engine.js.glMatrix

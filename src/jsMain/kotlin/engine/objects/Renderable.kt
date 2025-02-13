@@ -1,5 +1,7 @@
-package engine
+package engine.objects
 
+import engine.Shader
+import engine.Transform
 import engine.core.Core
 import org.khronos.webgl.Float32Array
 import org.khronos.webgl.WebGLRenderingContext

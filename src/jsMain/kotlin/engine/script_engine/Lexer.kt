@@ -30,6 +30,7 @@ object Lexer {
         ']' -> RBracket
         '=' -> Equals
         ',' -> Comma
+        '.' -> Dot
         else -> null
     }
 
@@ -45,7 +46,6 @@ object Lexer {
             input[cnt] in 'a'..'z' ||
                 input[cnt] in 'A'..'Z' ||
                 input[cnt] == '_' ||
-                input[cnt] == '.' ||
                 input[cnt] == '-' -> go(input, cnt + 1)
             else -> cnt
         }

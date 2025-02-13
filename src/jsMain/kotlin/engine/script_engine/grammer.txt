@@ -1,7 +1,9 @@
 <kengine-script> ::= <element-list>
 
 <item> ::= <letters> '=' <element-value>
-<obj> ::= '[' <letters> ']' ( <newline> <element-list> )?
+<item-list> :: <item> ( <newline> <item> )*
+<obj> ::= '[' <key-list> ']' ( <newline> <item-list> )*
+<key-list> ::= <letters> ( '.' <letters> )*
 
 
 <element> ::= <item> | <obj>
@@ -19,7 +21,7 @@
     | 's' | 't' | 'u' | 'v' | 'w' | 'x' | 'y' | 'z' | 'A' | 'B'
     | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K' | 'L'
     | 'M' | 'N' | 'O' | 'P' | 'Q' | 'R' | 'S' | 'T' | 'U' | 'V'
-    | 'W' | 'X' | 'Y' | 'Z' | '_' | '.' | '-'
+    | 'W' | 'X' | 'Y' | 'Z' | '_' | '-'
 <letters> ::= <letter>+
 <string> ::= '"' <string-chars>* '"'
 <string-chars> ::= /* any character except '"' and '\n' */
