@@ -14,6 +14,11 @@ kotlin {
         browser {  }
         binaries.executable()
     }
+    sourceSets {
+        val jsMain by getting {
+            kotlin.srcDir("scripts")
+        }
+    }
 }
 
 dependencies {

@@ -1,11 +1,11 @@
 package engine.script_engine
 
 class Parser(private val tokens: MutableList<Token>)  {
-    fun start(): List<Element> {
+    fun start(): Script {
         val elements = elementList()
 
         if (tokens.isNotEmpty()) error("Unexpected tokens present: $tokens")
-        else return elements
+        else return Script(elements)
     }
 
     private fun elementList(): List<Element> {
@@ -48,17 +48,17 @@ class Parser(private val tokens: MutableList<Token>)  {
                 items
             }
 
-        return Obj(identity, getItems())
+        return Obj(identity, getItems().associate { it.identity to it.value })
     }
 
     private fun keyList(): ObjIdentity {
         val identity = consume<Identifier>()
         return if (tokens.peek() is Dot) {
             consume<Dot>()
-            val childIdentity = consume<Identifier>()
-            ObjIdentity(childIdentity.text, identity.text)
+            val component = consume<Identifier>()
+            ObjIdentity(identity.text, component.text)
         } else {
-            ObjIdentity(identity.text)
+            error("Object $identity does not reference a component")
         }
     }
 
@@ -114,7 +114,7 @@ data class ArrayVal(val values: List<Value>) : Value()
 
 sealed class Element
 data class Item(val identity: String, val value: Value): Element()
-data class Obj(val identity: ObjIdentity, val items: List<Item>, val children: List<Obj> = emptyList()): Element()
-data class ObjIdentity(val identity: String, val parent: String? = null)
+data class Obj(val identity: ObjIdentity, val items: Map<String, Value>, val children: MutableList<Obj>? = null): Element()
+data class ObjIdentity(val entity: String, var component: String)
 
-data class Script(val elements: List<Element>)
+data class Script(val elements: List<Element>, val ktFile: String? = null)

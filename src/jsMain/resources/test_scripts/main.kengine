@@ -1,0 +1,21 @@
+script = "main"
+
+[Main.Camera]
+center = [20.0, 60.0]
+width = 20
+viewport = [20, 40, 600, 300]
+
+[WhiteSquare.Render]
+color = [1.0, 1.0, 1.0, 1.0]
+
+[RedSquare.Render]
+color = [1.0, 0.0, 0.0, 1.0]
+
+[WhiteSquare.Transform]
+position = [20.0, 60.0]
+rotation = 0.2
+scale = [5.0, 5.0]
+
+[RedSquare.Transform]
+position = [20.0, 60.0]
+scale = [2.0, 2.0]

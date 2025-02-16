@@ -1,7 +1,9 @@
 package engine.core
 
+import engine.systems.Camera
+import engine.systems.RenderSystem
+import engine.systems.World
 import kotlinx.browser.window
-import mygame.MyGame
 import kotlin.js.Date
 
 object GameLoop {
@@ -15,9 +17,9 @@ object GameLoop {
 
     private var isLoopRunning = false
 
-    private fun runLoop(myGame: MyGame) {
+    private fun runLoop(world: World) {
         if (isLoopRunning) {
-            window.requestAnimationFrame {  runLoop(myGame) }
+            window.requestAnimationFrame {  runLoop(world) }
 
             currentTime = Date.now()
             elapsedTime = currentTime - previousTime
@@ -26,17 +28,20 @@ object GameLoop {
 
             while ((lagTime >= MILLI_PER_FRAME) && isLoopRunning) {
                 Input.update()
-                myGame.update()
+                world.script?.update(0.5f)
                 lagTime -= MILLI_PER_FRAME
             }
-            myGame.draw()
+            Core.clearCanvas(arrayOf(.9f, .9f, .9f, 1f))
+            val camera = Camera.setupViewProjection(world)
+            RenderSystem.drawAll(world, camera)
         }
     }
 
-    fun start(myGame: MyGame) {
+    fun start(world: World) {
         previousTime = Date.now()
         lagTime = 0.0
         isLoopRunning = true
-        window.requestAnimationFrame { runLoop(myGame) }
+        world.script?.ready()
+        window.requestAnimationFrame { runLoop(world) }
     }
 }

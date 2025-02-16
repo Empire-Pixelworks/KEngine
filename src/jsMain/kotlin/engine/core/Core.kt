@@ -1,11 +1,11 @@
 package engine.core
 
+import MainScriptFactory
 import engine.core.resources.DefaultResources
 import engine.errors.KEngineCanvasNotFound
 import engine.errors.WebGlInvalidArraySizeError
 import engine.errors.WebGlNotSupportedError
 import kotlinx.browser.document
-import mygame.MyGame
 import org.khronos.webgl.WebGLRenderingContext
 import org.w3c.dom.HTMLCanvasElement
 
@@ -14,14 +14,14 @@ object Core {
     val gl: WebGLRenderingContext
 
     init {
+        println(MainScriptFactory.scriptName)
         gl = initializeWebGl()
         VertexBuffer.initializeBuffer()
     }
 
-    fun initializeGame(game: MyGame) {
-        DefaultResources.initialize().then {
-            game.init()
-            game.start()
+    fun initializeGame() {
+        DefaultResources.initialize().then { world ->
+            GameLoop.start(world)
         }
     }
 
