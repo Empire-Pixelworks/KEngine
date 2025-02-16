@@ -15,7 +15,6 @@ class Script(world: World): KengineScript(world) {
     lateinit var redXForm: TransformComponent
 
     override fun ready() {
-        println("ready!")
         whiteEntity = world.getOrCreateEntity("WhiteSquare")
         redEntity = world.getOrCreateEntity("RedSquare")
 
@@ -52,7 +51,6 @@ object MainScriptFactory : ScriptFactory {
     }
 
     init {
-        println("Hello World!")
         ScriptFactoryRegistry.register(this)
     }
 }
