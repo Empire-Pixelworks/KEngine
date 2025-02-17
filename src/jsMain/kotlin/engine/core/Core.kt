@@ -1,9 +1,13 @@
 package engine.core
 
 import engine.core.resources.DefaultResources
+import engine.core.resources.EngineResourceMap
 import engine.errors.KEngineCanvasNotFound
 import engine.errors.WebGlInvalidArraySizeError
 import engine.errors.WebGlNotSupportedError
+import engine.script_engine.Interpreter
+import engine.script_engine.Lexer
+import engine.script_engine.Parser
 import kotlinx.browser.document
 import org.khronos.webgl.WebGLRenderingContext
 import org.w3c.dom.HTMLCanvasElement
@@ -21,6 +25,18 @@ object Core {
         DefaultResources.initialize().then { world ->
             GameLoop.start(world)
         }
+    }
+
+    fun initializeNewScene(path: String) {
+        EngineResourceMap.loadResource(path, EngineResourceMap.FileType.TextFile)
+            .then {
+                val text = EngineResourceMap.getResource(path) as String
+                val tokens = Lexer.tkz(text)
+                val script = Parser(tokens.toMutableList()).start()
+
+                val world = Interpreter().interpret(script)
+                GameLoop.start(world)
+            }
     }
 
     private fun initializeWebGl(): WebGLRenderingContext {

@@ -21,7 +21,7 @@ class Script(world: World): KengineScript(world) {
     override fun update(dt: Float) {
         if (Input.isKeyPressed(Input.Key.ARROW_RIGHT)) {
             if (whiteXForm.getX() > 30) {
-                whiteXForm.setPosition(10f, 60f)
+                loadToNewScene("sceneTwo.kengine")
             }
             whiteXForm.incXPosBy(dt)
             pinkXForm.color[1] = Random.nextFloat()

@@ -34,7 +34,13 @@ object GameLoop {
             Core.clearCanvas(arrayOf(.9f, .9f, .9f, 1f))
             val camera = Camera.setupViewProjection(world)
             RenderSystem.drawAll(world, camera)
+        } else {
+            Core.initializeNewScene(world.script?.getStagedScene() ?: throw Exception("No Staged Scene set for transition"))
         }
+    }
+
+    fun stop() {
+        isLoopRunning = false
     }
 
     fun start(world: World) {
