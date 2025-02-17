@@ -6,7 +6,7 @@ import engine.script_engine.kotlin_scripts.KengineScript
 import kotlin.reflect.KClass
 
 class World {
-    private val nameToEntity = mutableMapOf<String, Entity>()
+    val nameToEntity = mutableMapOf<String, Entity>()
     private var nextEntity: Entity = 1
 
     var script: KengineScript? = null
@@ -36,4 +36,9 @@ class World {
 
     inline fun <reified T: Component> getComponent(entity: Entity): T? =
         components[entity]?.find { it is T } as T?
+
+    inline fun <reified T: Component> getComponentFor(name: String): T {
+        val e = nameToEntity[name] ?: throw Exception("Entity with name $name not found")
+        return getComponent<T>(e) ?: throw Exception("Component with type ${T::class} not found")
+    }
 }

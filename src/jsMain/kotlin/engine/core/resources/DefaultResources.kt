@@ -10,7 +10,7 @@ import kotlin.js.Promise
 object DefaultResources {
     private const val SIMPLE_VS = "GLSLShaders/SimpleVs.glsl"
     private const val SIMPLE_FS = "GLSLShaders/SimpleFS.glsl"
-    private const val ENTRY_POINT_SCRIPT = "test_scripts/main.kengine"
+    private const val ENTRY_POINT_SCRIPT = "main.kengine"
     lateinit var constColorShader: Shader.SimpleShader
 
     fun initialize(): Promise<World> {

@@ -1,6 +1,5 @@
 package engine.core
 
-import MainScriptFactory
 import engine.core.resources.DefaultResources
 import engine.errors.KEngineCanvasNotFound
 import engine.errors.WebGlInvalidArraySizeError
@@ -14,7 +13,6 @@ object Core {
     val gl: WebGLRenderingContext
 
     init {
-        println(MainScriptFactory.scriptName)
         gl = initializeWebGl()
         VertexBuffer.initializeBuffer()
     }

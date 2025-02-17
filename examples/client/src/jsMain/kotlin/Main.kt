@@ -1,25 +1,21 @@
 import engine.core.Input
-import engine.objects.Entity
+import engine.objects.RenderComponent
 import engine.objects.TransformComponent
 import engine.script_engine.kotlin_scripts.KengineScript
 import engine.script_engine.kotlin_scripts.ScriptFactory
 import engine.script_engine.kotlin_scripts.ScriptFactoryRegistry
 import engine.systems.World
-import kotlin.properties.Delegates
+import kotlin.random.Random
 
 class Script(world: World): KengineScript(world) {
-    var whiteEntity by Delegates.notNull<Int>()
-    var redEntity by Delegates.notNull<Int>()
-
     lateinit var whiteXForm: TransformComponent
     lateinit var redXForm: TransformComponent
+    lateinit var pinkXForm: RenderComponent
 
     override fun ready() {
-        whiteEntity = world.getOrCreateEntity("WhiteSquare")
-        redEntity = world.getOrCreateEntity("RedSquare")
-
-        whiteXForm = world.getComponent<TransformComponent>(whiteEntity) ?: throw Exception("No TransformComponent found")
-        redXForm = world.getComponent<TransformComponent>(redEntity) ?: throw Exception("No TransformComponent found")
+        whiteXForm = world.getComponentFor<TransformComponent>("WhiteSquare")
+        redXForm = world.getComponentFor<TransformComponent>("RedSquare")
+        pinkXForm = world.getComponentFor<RenderComponent>("PinkSquare")
     }
 
     override fun update(dt: Float) {
@@ -28,6 +24,7 @@ class Script(world: World): KengineScript(world) {
                 whiteXForm.setPosition(10f, 60f)
             }
             whiteXForm.incXPosBy(dt)
+            pinkXForm.color[1] = Random.nextFloat()
         }
 
         if (Input.isKeyClicked(Input.Key.ARROW_UP)) {
