@@ -1,19 +1,24 @@
 package engine.core.resources
 
+import org.w3c.files.File
+import org.w3c.xhr.ARRAYBUFFER
 import org.w3c.xhr.XMLHttpRequest
+import org.w3c.xhr.XMLHttpRequestResponseType
 import kotlin.js.Promise
 
 object EngineResourceMap {
     enum class FileType {
         KEngineScript,
         TextFile,
+        Audio,
     }
-    private val resourceMap = mutableMapOf<String, Any>()
+    private val resourceMap = mutableMapOf<String, Resource>()
 
-    fun loadResource(fileName: String, fileType: FileType): Promise<Unit> =
-        if (resourceMap.containsKey(fileName)) {
-            Promise.resolve(Unit)
-        } else {
+    fun <T>loadResource(fileName: String, fileType: FileType, postProcess: (Any?) -> Promise<Any> = { Promise.resolve(Unit) }): Promise<T> =
+        resourceMap[fileName]?.let {
+            incAssetCnt(fileName)
+            Promise.resolve(it.resource as T)
+        }.run {
             Promise { resolve, reject ->
                 XMLHttpRequest().let {
                     it.onreadystatechange = { _ ->
@@ -22,12 +27,24 @@ object EngineResourceMap {
                         }
                     }
                     it.open("GET", fileName, true)
+                    when (fileType) {
+                        FileType.Audio -> it.responseType = XMLHttpRequestResponseType.ARRAYBUFFER
+                        else -> {}
+                    }
                     it.onload = { _ ->
-                        if (fileType == FileType.TextFile) {
-                            resourceMap[fileName] = it.responseText
-                            resolve(Unit)
-                        } else {
-                            reject(Throwable("Unsupported FileType (For Now)"))
+                        when (fileType) {
+                            FileType.TextFile, FileType.KEngineScript -> {
+                                val resource = Resource(it.responseText)
+                                resourceMap[fileName] = resource
+                                resolve(resource.resource as T)
+                            }
+                            FileType.Audio -> {
+                                postProcess(it.response).then {
+                                    val resource = Resource(it)
+                                    resourceMap[fileName] = resource
+                                    resolve(resource.resource as T)
+                                }
+                            }
                         }
                     }
                     it.onerror = { reject(Throwable("There was an error!"))}
@@ -36,7 +53,27 @@ object EngineResourceMap {
             }
         }
 
-    fun getResource(key: String): Any? = resourceMap[key]
+    fun getResource(key: String): Resource? = resourceMap[key]
 
-    fun removeResource(key: String): Any? = resourceMap.remove(key)
+    fun removeResource(key: String) {
+        resourceMap[key]?.let {
+            it.usages -= 1
+        }
+        if (resourceMap.containsKey(key) && resourceMap[key]?.usages == 0) {
+            resourceMap.remove(key)
+        }
+    }
+
+    fun isResourceLoaded(key: String) = resourceMap[key] != null
+
+    private fun incAssetCnt(key: String) {
+        resourceMap[key]?.let {
+            it.usages += 1
+        }
+    }
 }
+
+data class Resource(
+    val resource: Any,
+    var usages: Int = 1
+)

@@ -1,14 +1,14 @@
 package engine.objects
 
 import engine.js.glMatrix
-import engine.script_engine.ArrayVal
-import engine.script_engine.FloatVal
-import engine.script_engine.IntVal
-import engine.script_engine.Value
+import engine.script_engine.*
 import org.khronos.webgl.Float32Array
+import kotlin.js.Promise
 import kotlin.reflect.KClass
 
 sealed interface Component {
+    fun allComponentsLoaded(): Promise<Unit> = Promise.resolve(Unit)
+
     companion object {
         private val registry = mutableMapOf<String, KClass<out Component>>()
 
@@ -16,6 +16,7 @@ sealed interface Component {
             registry["Camera"] = CameraComponent::class
             registry["Render"] = RenderComponent::class
             registry["Transform"] = TransformComponent::class
+            registry["Audio"] = AudioComponent::class
         }
 
         fun get(id: String): KClass<out Component>? = registry[id]
@@ -49,6 +50,10 @@ sealed interface Component {
                     wcWidth = width,
                     viewportArray = viewport
                 )
+            }
+            AudioComponent::class -> {
+                val audioFile = getAttrForType<StringVal>(attrs["audio"])?.value ?: throw Exception("'audio' attribute not defined for Audio")
+                AudioComponent(audioFile)
             }
             else -> throw Exception("Undefined Component")
         }

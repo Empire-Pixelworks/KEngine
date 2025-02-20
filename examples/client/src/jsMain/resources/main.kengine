@@ -25,3 +25,9 @@ color = [0.8, 0.9, 0.9, 1.0]
 
 [PinkSquare.Transform]
 position = [20.0, 60.0]
+
+[Background.Audio]
+audio = "assets/Jazzy_Shop.ogg"
+
+[Jump.Audio]
+audio = "assets/29_Jump_02.wav"

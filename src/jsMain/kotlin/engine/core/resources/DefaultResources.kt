@@ -15,7 +15,7 @@ object DefaultResources {
 
     fun initialize(): Promise<World> {
         val defaults = listOf(
-            EngineResourceMap.loadResource(
+            EngineResourceMap.loadResource<String>(
                 SIMPLE_VS,
                 EngineResourceMap.FileType.TextFile
             ),
@@ -29,12 +29,12 @@ object DefaultResources {
             ),
         )
 
-        return Promise.all(defaults.toTypedArray()).then {
-            val simpleVs = EngineResourceMap.getResource(SIMPLE_VS) as String
-            val simpleFs = EngineResourceMap.getResource(SIMPLE_FS) as String
+        return Promise.all(defaults.toTypedArray()).then { arr ->
+            val simpleVs = arr[0]
+            val simpleFs = arr[1]
             constColorShader = Shader.simpleShader(simpleVs, simpleFs)
 
-            val text = EngineResourceMap.getResource(ENTRY_POINT_SCRIPT) as String
+            val text = arr[2]
             val tokens = Lexer.tkz(text)
             val script = Parser(tokens.toMutableList()).start()
 

@@ -1,4 +1,5 @@
 import engine.core.Input
+import engine.objects.AudioComponent
 import engine.objects.RenderComponent
 import engine.objects.TransformComponent
 import engine.script_engine.kotlin_scripts.KengineScript
@@ -11,16 +12,22 @@ class Script(world: World): KengineScript(world) {
     lateinit var whiteXForm: TransformComponent
     lateinit var redXForm: TransformComponent
     lateinit var pinkXForm: RenderComponent
+    lateinit var bg: AudioComponent
+    lateinit var jump: AudioComponent
 
     override fun ready() {
         whiteXForm = world.getComponentFor<TransformComponent>("WhiteSquare")
         redXForm = world.getComponentFor<TransformComponent>("RedSquare")
         pinkXForm = world.getComponentFor<RenderComponent>("PinkSquare")
+        bg = world.getComponentFor<AudioComponent>("Background")
+        jump = world.getComponentFor<AudioComponent>("Jump")
     }
 
     override fun update(dt: Float) {
         if (Input.isKeyPressed(Input.Key.ARROW_RIGHT)) {
+            bg.playBg()
             if (whiteXForm.getX() > 30) {
+                bg.stopBg()
                 loadToNewScene("sceneTwo.kengine")
             }
             whiteXForm.incXPosBy(dt)
@@ -28,6 +35,7 @@ class Script(world: World): KengineScript(world) {
         }
 
         if (Input.isKeyClicked(Input.Key.ARROW_UP)) {
+            jump.play()
             whiteXForm.incRotationByDegree(1f)
         }
 

@@ -3,6 +3,7 @@ package engine.systems
 import engine.objects.Component
 import engine.objects.Entity
 import engine.script_engine.kotlin_scripts.KengineScript
+import kotlin.js.Promise
 import kotlin.reflect.KClass
 
 class World {
@@ -27,6 +28,10 @@ class World {
         components[entity]?.add(component)
         componentTypes[entity]?.add(component::class)
     }
+
+    fun allComponentsLoaded(): Promise<Unit> =
+        Promise.all(components.values.flatten().map {it.allComponentsLoaded()}.toTypedArray())
+            .then { Promise.resolve(Unit) }
 
     fun entitiesWithAll(requestedComponents: Set<KClass<out Component>>): Set<Entity> =
         componentTypes.filterValues { it.containsAll(requestedComponents) }.keys.toSet()

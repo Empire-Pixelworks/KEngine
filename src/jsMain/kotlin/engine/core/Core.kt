@@ -23,19 +23,22 @@ object Core {
 
     fun initializeGame() {
         DefaultResources.initialize().then { world ->
-            GameLoop.start(world)
+            world.allComponentsLoaded().then {
+                GameLoop.start(world)
+            }
         }
     }
 
     fun initializeNewScene(path: String) {
-        EngineResourceMap.loadResource(path, EngineResourceMap.FileType.TextFile)
+        EngineResourceMap.loadResource<String>(path, EngineResourceMap.FileType.TextFile)
             .then {
-                val text = EngineResourceMap.getResource(path) as String
-                val tokens = Lexer.tkz(text)
+                val tokens = Lexer.tkz(it)
                 val script = Parser(tokens.toMutableList()).start()
 
                 val world = Interpreter().interpret(script)
-                GameLoop.start(world)
+
+                world.allComponentsLoaded()
+                    .then { GameLoop.start(world) }
             }
     }
 
