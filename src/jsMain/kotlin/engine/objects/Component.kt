@@ -1,5 +1,6 @@
 package engine.objects
 
+import engine.objects.renderable.BasicRenderComponent
 import engine.objects.renderable.RenderComponent
 import engine.script_engine.*
 import org.khronos.webgl.Float32Array
@@ -23,7 +24,7 @@ interface Component {
 
         fun getInstance(c: KClass<out Component>, attrs: Map<String, Value>) = when (c) {
             TransformComponent::class -> TransformComponent(attrs)
-            RenderComponent::class -> RenderComponent(attrs)
+            BasicRenderComponent::class -> BasicRenderComponent(attrs)
             CameraComponent::class -> CameraComponent(attrs)
             AudioComponent::class -> AudioComponent(attrs)
             else -> throw Exception("Undefined Component")
