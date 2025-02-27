@@ -1,6 +1,6 @@
 package engine.core
 
-import engine.systems.Camera
+import engine.systems.CameraSystem
 import engine.systems.RenderSystem
 import engine.systems.World
 import kotlinx.browser.window
@@ -32,7 +32,7 @@ object GameLoop {
                 lagTime -= MILLI_PER_FRAME
             }
             Core.clearCanvas(arrayOf(.9f, .9f, .9f, 1f))
-            val camera = Camera.setupViewProjection(world)
+            val camera = CameraSystem.setupViewProjection(world)
             RenderSystem.drawAll(world, camera)
         } else {
             Core.initializeNewScene(world.script?.getStagedScene() ?: throw Exception("No Staged Scene set for transition"))

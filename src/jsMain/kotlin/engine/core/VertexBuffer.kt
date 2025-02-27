@@ -7,12 +7,19 @@ import org.khronos.webgl.WebGLRenderingContext
 
 object VertexBuffer {
     private var buffer: WebGLBuffer? = null
+    private var textureCoordBuffer: WebGLBuffer? = null
 
     private val verticesOfSquare = arrayOf(
         0.5F, 0.5F, 0.0F,
         -0.5f, 0.5F, 0.0F,
         0.5F, -0.5F, 0.0F,
         -0.5F, -0.5F, 0.0F,
+    )
+    private val textureCoordinates = arrayOf(
+        1.0f, 1.0f,
+        0.0f, 1.0f,
+        1.0f, 0.0f,
+        0.0f, 0.0f,
     )
 
     fun initializeBuffer() = setBufferReference()
@@ -22,18 +29,28 @@ object VertexBuffer {
         return buffer ?: throw KEngineError("Buffer not initialized")
     }
 
+    fun getTextureBuffer(): WebGLBuffer {
+        setBufferReference()
+        return textureCoordBuffer ?: throw KEngineError("Texture Buffer not initialized")
+    }
+
     private fun setBufferReference() {
-        if (buffer == null) {
-            buffer = initialize()
+        if (buffer == null || textureCoordBuffer == null) {
+            initialize()
         }
     }
 
-    private fun initialize(): WebGLBuffer {
-        val mVBuff = Core.gl.createBuffer() ?: throw KEngineError("There was an error creating the Vertex Buffer")
+    private fun initialize() {
+        fun initBuffer(buff: WebGLBuffer?, coordBuff: Array<Float>) {
+            Core.gl.bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, buff)
+            Core.gl.bufferData(WebGLRenderingContext.ARRAY_BUFFER, Float32Array(coordBuff), WebGLRenderingContext.STATIC_DRAW)
+        }
 
-        Core.gl.bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, mVBuff)
-        Core.gl.bufferData(WebGLRenderingContext.ARRAY_BUFFER, Float32Array(verticesOfSquare), WebGLRenderingContext.STATIC_DRAW)
+        buffer = Core.gl.createBuffer() ?: throw KEngineError("There was an error creating the Vertex Buffer")
+        initBuffer(buffer, verticesOfSquare)
 
-        return mVBuff
+        textureCoordBuffer = Core.gl.createBuffer() ?: throw KEngineError("There was an error creating the Vertex Buffer")
+        initBuffer(textureCoordBuffer, textureCoordinates)
     }
+
 }

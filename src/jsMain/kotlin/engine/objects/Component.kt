@@ -1,12 +1,12 @@
 package engine.objects
 
-import engine.js.glMatrix
+import engine.objects.renderable.RenderComponent
 import engine.script_engine.*
 import org.khronos.webgl.Float32Array
 import kotlin.js.Promise
 import kotlin.reflect.KClass
 
-sealed interface Component {
+interface Component {
     fun allComponentsLoaded(): Promise<Unit> = Promise.resolve(Unit)
 
     companion object {
@@ -22,46 +22,17 @@ sealed interface Component {
         fun get(id: String): KClass<out Component>? = registry[id]
 
         fun getInstance(c: KClass<out Component>, attrs: Map<String, Value>) = when (c) {
-            TransformComponent::class -> {
-                val position = getAttrForType<ArrayVal>(attrs["position"])?.toFloatArr()
-                val scale = getAttrForType<ArrayVal>(attrs["scale"])?.toFloatArr()
-                val rotation = getAttrForType<FloatVal>(attrs["rotation"])?.value
-
-                TransformComponent(
-                    position =  fromArr(position) ?: glMatrix.vec2.fromValues(0f, 0f),
-                    scale = fromArr(scale) ?: glMatrix.vec2.fromValues(1f, 1f),
-                    rotationInRad = rotation ?: 0f,
-                )
-            }
-            RenderComponent::class -> {
-                val color = getAttrForType<ArrayVal>(attrs["color"])?.toFloatArr()
-
-                RenderComponent(
-                    color = color ?: arrayOf(1f, 1f, 1f, 1f),
-                )
-            }
-            CameraComponent::class -> {
-                val center = getAttrForType<ArrayVal>(attrs["center"])?.toFloatArr() ?: throw Exception("'center' attribute not defined for Camera")
-                val width = getAttrForType<IntVal>(attrs["width"])?.value ?: throw Exception("'width' attribute not defined for Camera")
-                val viewport = getAttrForType<ArrayVal>(attrs["viewport"])?.toIntArr() ?: throw Exception("'viewport' attribute not defined for Camera")
-
-                CameraComponent(
-                    wcCenter = Float32Array(center),
-                    wcWidth = width,
-                    viewportArray = viewport
-                )
-            }
-            AudioComponent::class -> {
-                val audioFile = getAttrForType<StringVal>(attrs["audio"])?.value ?: throw Exception("'audio' attribute not defined for Audio")
-                AudioComponent(audioFile)
-            }
+            TransformComponent::class -> TransformComponent(attrs)
+            RenderComponent::class -> RenderComponent(attrs)
+            CameraComponent::class -> CameraComponent(attrs)
+            AudioComponent::class -> AudioComponent(attrs)
             else -> throw Exception("Undefined Component")
         }
 
-        private fun fromArr(f: Array<Float>?): Float32Array? =
+        fun fromArr(f: Array<Float>?): Float32Array? =
             if (f == null) null else Float32Array(f)
 
-        private inline fun <reified T: Value>getAttrForType(v: Value?): T? {
+        inline fun <reified T: Value>getAttrForType(v: Value?): T? {
             return if (v == null) null
             else {
                 if (v is T) v

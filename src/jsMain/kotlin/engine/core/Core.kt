@@ -9,6 +9,7 @@ import engine.script_engine.Interpreter
 import engine.script_engine.Lexer
 import engine.script_engine.Parser
 import kotlinx.browser.document
+import org.khronos.webgl.WebGLContextAttributes
 import org.khronos.webgl.WebGLRenderingContext
 import org.w3c.dom.HTMLCanvasElement
 
@@ -47,15 +48,25 @@ object Core {
                 document.getElementById(CANVAS_ID) as HTMLCanvasElement?
                 ) ?: throw KEngineCanvasNotFound(CANVAS_ID)
 
-        return when (val context = canvas.getContext("webgl")) {
+        val attrs = object: WebGLContextAttributes {
+            override var alpha: Boolean? = false
+        }
+
+        val gl = when (val context = canvas.getContext("webgl", attrs)) {
             null -> {
-                when (val experimentalContext = canvas.getContext("experimental-webgl")) {
+                when (val experimentalContext = canvas.getContext("experimental-webgl", attrs)) {
                     null -> throw WebGlNotSupportedError
                     else -> experimentalContext as WebGLRenderingContext
                 }
             }
             else -> context as WebGLRenderingContext
         }
+
+        gl.blendFunc(WebGLRenderingContext.SRC_ALPHA, WebGLRenderingContext.ONE_MINUS_SRC_ALPHA)
+        gl.enable(WebGLRenderingContext.BLEND)
+        gl.pixelStorei(WebGLRenderingContext.UNPACK_FLIP_Y_WEBGL, 1)
+
+        return gl
     }
 
     fun clearCanvas(color: Array<Float>) {

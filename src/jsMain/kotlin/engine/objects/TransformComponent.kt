@@ -1,16 +1,23 @@
 package engine.objects
 
 import engine.js.glMatrix
+import engine.objects.Component.Companion.fromArr
+import engine.objects.Component.Companion.getAttrForType
+import engine.script_engine.ArrayVal
+import engine.script_engine.FloatVal
+import engine.script_engine.Value
 import org.khronos.webgl.Float32Array
 import org.khronos.webgl.get
 import org.khronos.webgl.set
 import kotlin.math.PI
 
-data class TransformComponent(
-    private var position: Float32Array = glMatrix.vec2.fromValues(0f, 0f),
-    private var scale: Float32Array = glMatrix.vec2.fromValues(1f, 1f),
-    private var rotationInRad: Float = 0f,
-): Component {
+data class TransformComponent(val attrs: Map<String, Value>): Component {
+    private var position: Float32Array =
+        fromArr(getAttrForType<ArrayVal>(attrs["position"])?.toFloatArr()) ?: glMatrix.vec2.fromValues(0f, 0f)
+    private var scale: Float32Array =
+        fromArr(getAttrForType<ArrayVal>(attrs["scale"])?.toFloatArr()) ?: glMatrix.vec2.fromValues(1f, 1f)
+    private var rotationInRad: Float = getAttrForType<FloatVal>(attrs["rotation"])?.value ?: 0f
+
     fun xForm(): Float32Array {
         val matrix = glMatrix.mat4.create()
 

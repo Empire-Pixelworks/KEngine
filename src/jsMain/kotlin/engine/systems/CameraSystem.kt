@@ -3,28 +3,11 @@ package engine.systems
 import engine.core.Core
 import engine.js.glMatrix
 import engine.objects.CameraComponent
-import engine.objects.RenderComponent
-import engine.objects.TransformComponent
 import org.khronos.webgl.Float32Array
 import org.khronos.webgl.WebGLRenderingContext
 import org.khronos.webgl.get
 
-object RenderSystem {
-    fun drawAll(world: World, vpMatrix: Float32Array) {
-        world.entitiesWithAll(
-            setOf(TransformComponent::class, RenderComponent::class)
-        ).forEach { entity ->
-            val t = world.getComponent<TransformComponent>(entity) ?: throw Exception("Transform Component not found for entity: $entity")
-            val r = world.getComponent<RenderComponent>(entity) ?: throw Exception("RenderComponent not found for entity: $entity")
-
-            r.shader.activateShader(r.color, vpMatrix)
-            r.shader.loadObjectTransform(t.xForm())
-            Core.gl.drawArrays(WebGLRenderingContext.TRIANGLE_STRIP, 0, 4)
-        }
-    }
-}
-
-object Camera {
+object CameraSystem {
     fun setupViewProjection(world: World): Float32Array {
         world.entitiesWith<CameraComponent>().firstOrNull()?.let { e ->
             world.getComponent<CameraComponent>(e)?.let { camera ->

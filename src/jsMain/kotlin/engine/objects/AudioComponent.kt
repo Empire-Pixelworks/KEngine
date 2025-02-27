@@ -1,12 +1,15 @@
 package engine.objects
 
 import engine.core.resources.EngineResourceMap
+import engine.objects.Component.Companion.getAttrForType
+import engine.script_engine.StringVal
+import engine.script_engine.Value
 import kotlinx.browser.window
 import kotlin.js.Promise
 
-data class AudioComponent(
-    val clipName: String,
-): Component {
+data class AudioComponent(private val attrs: Map<String, Value>): Component {
+    private val clipName: String = getAttrForType<StringVal>(attrs["audio"])?.value ?: throw Exception("'audio' attribute not defined for Audio")
+
     private var bgAudioNode: dynamic = null
     private val audioContext = createAudioContext()
     private lateinit var audio: Any
